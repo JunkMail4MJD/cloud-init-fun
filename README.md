@@ -2,6 +2,17 @@
 playing around with cloud-init images
 
 
+## Pre-Requisites
+
+* have a machine running ubuntu
+* install Virtual Box
+* install cloud-init tools
+
+    'sudo apt-get install qemu-utils genisoimage cloud-utils
+
+
+
+
 ## Download ubuntu cloud images from here
 * [http://cloud-images.ubuntu.com/releases/16.04/release/](http://cloud-images.ubuntu.com/releases/16.04/release/)
 * [http://cloud-images.ubuntu.com/releases/18.04/release/](http://cloud-images.ubuntu.com/releases/18.04/release/)
