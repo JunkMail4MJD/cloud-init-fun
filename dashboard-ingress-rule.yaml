@@ -1,0 +1,14 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: dashboard-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /
+        backend:
+          serviceName: kubernetes-dashboard
+          servicePort: 80
