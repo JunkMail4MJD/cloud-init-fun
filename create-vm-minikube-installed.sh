@@ -3,9 +3,12 @@ help () {
   cat <<- END
 	HELP: Script to create VirtualBox VMs using cloud-init (similar to AWS EC2)
   ------------------------------------------
-    ./create-generic-vm.sh  <virtual machine name> <cloud image appliance file - ova>
 
-    Example: create-generic-vm.sh mini-01 ubuntu-18.04-server-cloudimg-amd64.ova
+    This script creates a virtual machine that has minikube installed and kubectl installed but no cluster.
+    
+    ./create-vm-minikube-installed.sh  <virtual machine name> <cloud image appliance file - ova>
+
+    Example: create-vm-minikube-installed.sh mini-18 ubuntu-18.04-server-cloudimg-amd64.ova
 
 	END
 }

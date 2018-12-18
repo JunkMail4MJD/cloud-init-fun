@@ -3,9 +3,12 @@ help () {
   cat <<- END
 	HELP: Script to create VirtualBox VMs using cloud-init (similar to AWS EC2)
   ------------------------------------------
-    ./create-generic-vm.sh  <virtual machine name> <cloud image appliance file - ova>
 
-    Example: create-generic-vm.sh generic-18 ubuntu-18.04-server-cloudimg-amd64.ova
+    This script creates a virtual machine that has minikube installed and kubectl installed and a basic cluster.
+
+    ./create-basic-minikube-vm.sh  <virtual machine name> <cloud image appliance file - ova>
+
+    Example: create-basic-minikube-vm.sh mini-18 ubuntu-18.04-server-cloudimg-amd64.ova
 
 	END
 }
@@ -53,7 +56,15 @@ runcmd:
  - "ip addr"
  - "df -h"
  - [ update-grub ]
- - "docker run -d --name thisNginx --network host nginx:1.14-alpine"
+ - "curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
+ - "chmod +x ./kubectl"
+ - "sudo mv ./kubectl /usr/local/bin/kubectl"
+ - "curl -Lo minikube https://storage.googleapis.com/minikube/releases/v0.31.0/minikube-linux-amd64 && chmod +x minikube && sudo cp minikube /usr/local/bin/ && rm minikube"
+ - "export CHANGE_MINIKUBE_NONE_USER=true"
+ - "sudo minikube start --vm-driver none"
+ - "sudo minikube addons enable ingress"
+ - "sudo kubectl apply -f https://raw.githubusercontent.com/JunkMail4MJD/cloud-init-fun/master/dashboard-ingress-rule.yaml -n kube-system"
+ - "sudo kubectl get all --all-namespaces"
 EOF
 
 instanceId=$(openssl rand -hex 8)
