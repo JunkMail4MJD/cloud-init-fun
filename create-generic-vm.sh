@@ -22,10 +22,11 @@ echo "Creating virtual machine ${1} based on ${2}"
 
 vmname=$1
 cloudimage=$2
+basefolder="$(pwd)/"
 
-mkdir -p "$(pwd)/${vmname}"
-ssh-keygen -t rsa -C ubuntu -f "$(pwd)/${vmname}/${vmname}"-key -N ""
-publicKey=$(head -n 1 "$(pwd)/${vmname}/${vmname}"-key.pub)
+mkdir -p "${basefolder}${vmname}"
+ssh-keygen -t rsa -C ubuntu -f "${basefolder}${vmname}/${vmname}-key" -N ""
+publicKey=$(head -n 1 "${basefolder}${vmname}/${vmname}-key.pub")
 
 cat <<EOF > "${vmname}/user-data"
 #cloud-config
@@ -33,20 +34,17 @@ users:
   - name: ubuntu
     plain_text_passwd: 'password'
     lock_passwd: False
+    home: /home/ubuntu
+    shell: /bin/bash
     gecos: ubuntu
     sudo: ALL=(ALL) NOPASSWD:ALL
     ssh-authorized-keys:
-      - $publicKey
+      - ${publicKey}
 
 system_info:
   default_user:
    name: ubuntu
-   plain_text_passwd: 'password'
-   home: /home/ubuntu
-   shell: /bin/bash
-   lock_passwd: False
    groups: [sudo, adm ]
-   shell: /bin/bash
 packages:
  - docker.io
 runcmd:
@@ -62,19 +60,29 @@ instance-id: ${instanceId}
 local-hostname: ${vmname}
 EOF
 
-docker run --rm -d --name cloud-init-creator -v $(pwd)/${vmname}/:/usr/src/files junkmail4mjd/cloud-init-creator:v0.0.1
+docker run --rm -d --name cloud-init-creator -v ${basefolder}${vmname}/:/usr/src/files junkmail4mjd/cloud-init-creator:v0.0.1
 
-VBoxManage import "$cloudimage" --vsys 0 --vmname "${vmname}" --cpus 1 --memory 2048
 
-VBoxManage modifyvm "${vmname}" --uart1 0x03f8 4 --uartmode1 file "$(pwd)/${vmname}/${vmname}"-output.txt
+##------------------ setup variables
+imageName=images/ubuntu-18.04-server-cloudimg-amd64.vmdk
+bootDisk=${vmname}/disk-1.vdi
 
-VBoxManage storageattach "${vmname}" \
-    --storagectl "IDE" --port 1 --device 0 \
-    --type dvddrive --medium "$(pwd)/${vmname}/config-data.iso"
-## --bridgeadapter<1-N> none|<devicename>
+##------------------ Define Virtual Machine
+vboxmanage createvm --name ${vmname} --ostype Linux_64 --basefolder ${basefolder} --register
+VBoxManage storagectl ${vmname} --name "IDE" --add ide --controller PIIX4
+VBoxManage storagectl ${vmname} --name "SCSI" --add scsi --controller Lsilogic
+VBoxManage clonehd ${imageName} ${bootDisk} --format vdi
+VBoxManage modifymedium disk ${vmname}/disk-1.vdi --resize 102400
+VBoxManage storageattach ${vmname} --storagectl "SCSI" --port 0 --device 0 --type hdd --medium ${bootDisk}
+VBoxManage modifyvm ${vmname} --uart1 0x03f8 4 --uartmode1 file "${basefolder}${vmname}/console-output.log"
+VBoxManage modifyvm ${vmname} --memory 2048 --vram 128
+VBoxManage modifyvm ${vmname} --nic1 bridged --bridgeadapter1 en0
+VBoxManage storageattach "${vmname}" --storagectl "IDE" --port 1 --device 0 --type dvddrive --medium "${basefolder}${vmname}/config-data.iso"
 
+
+##------------------ start virtual machine
 VBoxManage startvm "${vmname}"
 
 printf "When your new machine has finished booting,\n"
 printf "ssh into your new box with the following command:\n\n"
-printf "   ssh ubuntu@${vmname} -i $(pwd)/${vmname}/${vmname}-key\n\n"
+printf "   ssh ubuntu@${vmname} -i ${basefolder}${vmname}/${vmname}-key\n\n"
