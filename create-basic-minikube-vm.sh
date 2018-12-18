@@ -41,7 +41,7 @@ users:
     gecos: ubuntu
     sudo: ALL=(ALL) NOPASSWD:ALL
     ssh-authorized-keys:
-      - $publicKey
+      - ${publicKey}
 
 system_info:
   default_user:
@@ -77,7 +77,7 @@ EOF
 
 docker run --rm -d --name cloud-init-creator -v ${basefolder}${vmname}/:/usr/src/files junkmail4mjd/cloud-init-creator:v0.0.1
 
-VBoxManage import "$cloudimage" --vsys 0 --vmname "${vmname}" --cpus 1 --memory 2048
+VBoxManage import "${cloudimage}" --vsys 0 --vmname "${vmname}" --cpus 1 --memory 2048
 
 VBoxManage modifyvm "${vmname}" --uart1 0x03f8 4 --uartmode1 file "${basefolder}${vmname}/${vmname}"-output.txt
 
