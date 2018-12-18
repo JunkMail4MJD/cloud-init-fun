@@ -37,21 +37,17 @@ cat <<EOF > "${vmname}/user-data"
 users:
   - name: ubuntu
     plain_text_passwd: 'password'
+    home: /home/ubuntu
+    shell: /bin/bash
     lock_passwd: False
     gecos: ubuntu
     sudo: ALL=(ALL) NOPASSWD:ALL
     ssh-authorized-keys:
       - ${publicKey}
-
 system_info:
   default_user:
    name: ubuntu
-   plain_text_passwd: 'password'
-   home: /home/ubuntu
-   shell: /bin/bash
-   lock_passwd: False
    groups: [sudo, adm ]
-   shell: /bin/bash
 packages:
  - docker.io
 runcmd:
@@ -77,15 +73,24 @@ EOF
 
 docker run --rm -d --name cloud-init-creator -v ${basefolder}${vmname}/:/usr/src/files junkmail4mjd/cloud-init-creator:v0.0.1
 
-VBoxManage import "${cloudimage}" --vsys 0 --vmname "${vmname}" --cpus 1 --memory 2048
+##------------------ setup variables
+imageName=images/ubuntu-18.04-server-cloudimg-amd64.vmdk
+bootDisk=${vmname}/disk-1.vdi
 
-VBoxManage modifyvm "${vmname}" --uart1 0x03f8 4 --uartmode1 file "${basefolder}${vmname}/${vmname}"-output.txt
+##------------------ Define Virtual Machine
+vboxmanage createvm --name ${vmname} --ostype Linux_64 --basefolder ${basefolder} --register
+VBoxManage storagectl ${vmname} --name "IDE" --add ide --controller PIIX4
+VBoxManage storagectl ${vmname} --name "SCSI" --add scsi --controller Lsilogic
+VBoxManage clonehd ${imageName} ${bootDisk} --format vdi
+VBoxManage modifymedium disk ${vmname}/disk-1.vdi --resize 102400
+VBoxManage storageattach ${vmname} --storagectl "SCSI" --port 0 --device 0 --type hdd --medium ${bootDisk}
+VBoxManage modifyvm ${vmname} --uart1 0x03f8 4 --uartmode1 file "${basefolder}${vmname}/console-output.log"
+VBoxManage modifyvm ${vmname} --memory 6144 --vram 128 --cpus 4
+VBoxManage modifyvm ${vmname} --nic1 bridged --bridgeadapter1 en0
+VBoxManage storageattach "${vmname}" --storagectl "IDE" --port 1 --device 0 --type dvddrive --medium "${basefolder}${vmname}/config-data.iso"
 
-VBoxManage storageattach "${vmname}" \
-    --storagectl "IDE" --port 1 --device 0 \
-    --type dvddrive --medium "${basefolder}${vmname}/config-data.iso"
-## --bridgeadapter<1-N> none|<devicename>
 
+##------------------ start virtual machine
 VBoxManage startvm "${vmname}"
 
 printf "When your new machine has finished booting,\n"

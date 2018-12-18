@@ -40,7 +40,6 @@ users:
     sudo: ALL=(ALL) NOPASSWD:ALL
     ssh-authorized-keys:
       - ${publicKey}
-
 system_info:
   default_user:
    name: ubuntu

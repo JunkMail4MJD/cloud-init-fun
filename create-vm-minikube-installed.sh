@@ -42,12 +42,10 @@ users:
     gecos: ubuntu
     sudo: ALL=(ALL) NOPASSWD:ALL
     ssh-authorized-keys:
-      - $publicKey
-
+      - ${publicKey}
 system_info:
   default_user:
    name: ubuntu
-   plain_text_passwd: 'password'
    groups: [sudo, adm ]
 packages:
  - docker.io
@@ -81,7 +79,7 @@ VBoxManage clonehd ${imageName} ${bootDisk} --format vdi
 VBoxManage modifymedium disk ${vmname}/disk-1.vdi --resize 102400
 VBoxManage storageattach ${vmname} --storagectl "SCSI" --port 0 --device 0 --type hdd --medium ${bootDisk}
 VBoxManage modifyvm ${vmname} --uart1 0x03f8 4 --uartmode1 file "${basefolder}${vmname}/console-output.log"
-VBoxManage modifyvm ${vmname} --memory 2048 --vram 128
+VBoxManage modifyvm ${vmname} --memory 6144 --vram 128 --cpus 4
 VBoxManage modifyvm ${vmname} --nic1 bridged --bridgeadapter1 en0
 VBoxManage storageattach "${vmname}" --storagectl "IDE" --port 1 --device 0 --type dvddrive --medium "${basefolder}${vmname}/config-data.iso"
 
