@@ -1,16 +1,16 @@
 #!/bin/bash
 help () {
   cat <<- END
-	HELP: Script to delete VirtualBox VMs
+	HELP: Script to create VirtualBox VMs using cloud-init (similar to AWS EC2)
   ------------------------------------------
-    ./cleanup-vm.sh  <virtual machine name>
+    ./create-generic-vm.sh  <virtual machine name> <cloud image appliance file - ova>
 
-    Example: ./cleanup-vm.sh mini-01
+    Example: create-generic-vm.sh mini-01 ubuntu-18.04-server-cloudimg-amd64.ova
 
 	END
 }
 parameterCount=$#
-if (( parameterCount != 1 )); then
+if (( parameterCount != 2 )); then
   RED="\033[1;31m"
   RESET="\033[0;0m"
   printf "\n${RED}Illegal number of parameters: ${parameterCount}!\n\n${RESET}------------------------------------------\n";
@@ -18,16 +18,16 @@ if (( parameterCount != 1 )); then
   exit 1;
 fi
 
-echo "Deleting Virtual Machine ${1}"
-
+echo "Creating virtual machine ${1} based on ${2}"
 
 vmname=$1
 cloudimage=$2
 
-ssh-keygen -t rsa -C ubuntu -f "$(pwd)"/"$vmname"-key -N ""
-publicKey=$(head -n 1 "$(pwd)"/"$vmname"-key.pub)
+mkdir -p "$(pwd)/${vmname}"
+ssh-keygen -t rsa -C ubuntu -f "$(pwd)/${vmname}/${vmname}"-key -N ""
+publicKey=$(head -n 1 "$(pwd)/${vmname}/${vmname}"-key.pub)
 
-cat <<EOF > user-data
+cat <<EOF > "${vmname}/user-data"
 #cloud-config
 users:
   - name: ubuntu
@@ -56,24 +56,25 @@ runcmd:
  - "docker run -d --name thisNginx --network host nginx:1.14-alpine"
 EOF
 
-cat <<EOF > meta-data
-instance-id: id-12346
-local-hostname: $vmname
+instanceId=$(openssl rand -hex 8)
+cat <<EOF > "${vmname}/meta-data"
+instance-id: ${instanceId}
+local-hostname: ${vmname}
 EOF
 
-cloud-localds config-data.iso user-data meta-data
+docker run --rm -d --name cloud-init-creator -v $(pwd)/${vmname}/:/usr/src/files junkmail4mjd/cloud-init-creator:v0.0.1
 
-VBoxManage import "$cloudimage" --vsys 0 --vmname "$vmname" --cpus 1 --memory 2048
+VBoxManage import "$cloudimage" --vsys 0 --vmname "${vmname}" --cpus 1 --memory 2048
 
-VBoxManage modifyvm "$vmname" --uart1 0x03f8 4 --uartmode1 file "$(pwd)"/"$vmname"-output.txt
+VBoxManage modifyvm "${vmname}" --uart1 0x03f8 4 --uartmode1 file "$(pwd)/${vmname}/${vmname}"-output.txt
 
-VBoxManage storageattach "$vmname" \
+VBoxManage storageattach "${vmname}" \
     --storagectl "IDE" --port 1 --device 0 \
-    --type dvddrive --medium "$(pwd)"/config-data.iso
+    --type dvddrive --medium "$(pwd)/${vmname}/config-data.iso"
 ## --bridgeadapter<1-N> none|<devicename>
 
-VBoxManage startvm "$vmname"
+VBoxManage startvm "${vmname}"
 
 printf "When your new machine has finished booting,\n"
 printf "ssh into your new box with the following command:\n\n"
-printf "   ssh ubuntu@$vmname -i "$(pwd)"/"$vmname"-key\n\n"
+printf "   ssh ubuntu@${vmname} -i $(pwd)/${vmname}/${vmname}-key\n\n"
