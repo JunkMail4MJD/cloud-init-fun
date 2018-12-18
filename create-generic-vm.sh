@@ -1,26 +1,25 @@
-## Check if the script is run with bash as shell interpreter.
-if [ -z "$BASH_VERSION" ] ; then
-   echo 'Boot Info Script needs to be run with bash as shell interpreter.' >&2;
-   exit 1;
-fi
-
+#!/bin/bash
 help () {
-   cat <<- HELP
+  cat <<- END
+	HELP: Script to delete VirtualBox VMs
+  ------------------------------------------
+    ./cleanup-vm.sh  <virtual machine name>
 
-	Create Generic VirtualBox VM Script:
-	-----------------------
-    ./create-generic-vm <virtual machine name> <cloud image filename.ova>
+    Example: ./cleanup-vm.sh mini-01
 
-	HELP
-
-   exit 0;
+	END
 }
 parameterCount=$#
-if (( parameterCount != 2 )); then
-    echo "Illegal number of parameters: $parameterCount!\n";
-    help;
-    exit 1;
+if (( parameterCount != 1 )); then
+  RED="\033[1;31m"
+  RESET="\033[0;0m"
+  printf "\n${RED}Illegal number of parameters: ${parameterCount}!\n\n${RESET}------------------------------------------\n";
+  help;
+  exit 1;
 fi
+
+echo "Deleting Virtual Machine ${1}"
+
 
 vmname=$1
 cloudimage=$2
