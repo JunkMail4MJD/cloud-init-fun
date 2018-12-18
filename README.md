@@ -32,12 +32,13 @@ playing around with cloud-init images
 
 ## Cleanup when Reusing server names
 
-If you destroy and recreate a machine with the same name as it's predecessor and you've been ssh-ing into the box then its fingerprint will have changed in the process of recreating the box. The SSH client will assume that there is a man in the middle attack underway and won't let you ssh into the box. This is easily fixed by just deleting your ssh known hosts file. 
+If you destroy and recreate a machine with the same name as it's predecessor and you've been ssh-ing into the box then its fingerprint will have changed in the process of recreating the box. The SSH client will assume that there is a man in the middle attack underway and won't let you ssh into the box. This is easily fixed by just deleting your ssh known hosts file.
 
       rm ~/.ssh/known_hosts
 
 ## Cleanup when you are done
 
+    ./cleanup-vm.sh generic-16
     ./cleanup-vm.sh generic-18
     ./cleanup-vm.sh mini-installed
     ./cleanup-vm.sh mini-basic-18
