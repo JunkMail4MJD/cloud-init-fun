@@ -66,7 +66,7 @@ Here are some example scripts to get you started exploring what is possible with
 * With no root user password set it will be impossible to log into the box with anything other than the SSH Key that was created and stored on you machine
 
 
-**Kubernetes Playground with a minimal cluster setup**
+**Kubernetes Playground with a cluster**
 
       ./create-basic-minikube-vm.sh mini-basic-cluster images/ubuntu-18.04-server-cloudimg-amd64.vmdk
 
