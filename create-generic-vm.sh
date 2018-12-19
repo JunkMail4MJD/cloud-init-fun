@@ -1,4 +1,8 @@
 #!/bin/bash
+originalMachineFolder=$(VBoxManage list systemproperties | grep -i "default machine folder:" | cut -b 24- | awk '{gsub(/^ +| +$/,"")}1')
+set -e
+trap 'handleError' EXIT
+
 help () {
   cat <<- END
 	HELP: Script to create VirtualBox VMs using cloud-init (similar to AWS EC2)
@@ -10,8 +14,19 @@ help () {
 	END
 }
 
-set -e
-trap 'echo "exit $? due to $previous_command"' EXIT
+handleError(){
+
+  if [ $? -gt 0 ]
+  then
+    echo "exit $? due to ${BASH_COMMAND}"
+    if test -z "${originalMachineFolder}"
+    then
+      echo " "
+    else
+      vboxmanage setproperty machinefolder ${originalMachineFolder}
+    fi
+  fi
+}
 
 parameterCount=$#
 if (( parameterCount != 2 )); then
@@ -67,27 +82,20 @@ docker run --rm -d --name cloud-init-creator -v ${basefolder}${vmname}/:/usr/src
 
 
 ##------------------ setup variables
-imageName=images/ubuntu-18.04-server-cloudimg-amd64.vmdk
 bootDisk=${vmname}/disk-1.vdi
-originalMachineFolder=$(VBoxManage list systemproperties | grep -i "default machine folder:" | cut -b 24- | awk '{gsub(/^ +| +$/,"")}1')
 
 vboxmanage setproperty machinefolder ${basefolder}
 ##------------------ Define Virtual Machine
-VBoxManage import appliances/blank-vm.ova --vsys 0 --vmname "$vmname" --cpus 1 --memory 2048
+VBoxManage import appliances/empty-cloudimg.ovf --vsys 0 --vmname "$vmname" --cpus 1 --memory 2048
 VBoxManage modifyvm ${vmname} --uart1 0x03f8 4 --uartmode1 file "${basefolder}${vmname}/console-output.log"
+VBoxManage storagectl ${vmname} --name "IDE" --add ide --controller PIIX4
+VBoxManage storagectl ${vmname} --name "SCSI" --add scsi --controller Lsilogic
 VBoxManage storageattach "${vmname}" --storagectl "IDE" --port 1 --device 0 --type dvddrive --medium "${basefolder}${vmname}/config-data.iso"
-
-
-#vboxmanage createvm --name ${vmname} --ostype Linux_64 --basefolder ${basefolder} --register
-#VBoxManage storagectl ${vmname} --name "IDE" --add ide --controller PIIX4
-#VBoxManage storagectl ${vmname} --name "SCSI" --add scsi --controller Lsilogic
-VBoxManage clonehd ${imageName} ${bootDisk} --format vdi
+VBoxManage clonehd ${cloudimage} ${bootDisk} --format vdi
 VBoxManage modifymedium disk ${vmname}/disk-1.vdi --resize 102400
 VBoxManage storageattach ${vmname} --storagectl "SCSI" --port 0 --device 0 --type hdd --medium ${bootDisk}
-#VBoxManage modifyvm ${vmname} --memory 2048 --vram 128
-#VBoxManage modifyvm ${vmname} --nic1 bridged --bridgeadapter1 en0
-vboxmanage setproperty machinefolder ${originalMachineFolder}
 
+VBoxManage setproperty machinefolder ${originalMachineFolder}
 
 ##------------------ start virtual machine
 VBoxManage startvm "${vmname}"
