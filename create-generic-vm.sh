@@ -98,7 +98,7 @@ VBoxManage storageattach ${vmname} --storagectl "SCSI" --port 0 --device 0 --typ
 VBoxManage setproperty machinefolder ${originalMachineFolder}
 
 ##------------------ start virtual machine
-VBoxManage startvm "${vmname}"
+VBoxManage startvm "${vmname}" --type headless
 
 printf "When your new machine has finished booting,\n"
 printf "ssh into your new box with the following command:\n\n"
