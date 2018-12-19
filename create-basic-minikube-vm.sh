@@ -97,7 +97,7 @@ bootDisk=${vmname}/disk-1.vdi
 
 vboxmanage setproperty machinefolder ${basefolder}
 ##------------------ Define Virtual Machine
-VBoxManage import appliances/empty-cloudimg.ovf --vsys 0 --vmname "$vmname" --cpus 1 --memory 2048
+VBoxManage import appliances/empty-cloudimg.ovf --vsys 0 --vmname "$vmname" --cpus 4 --memory 8192
 VBoxManage modifyvm ${vmname} --uart1 0x03f8 4 --uartmode1 file "${basefolder}${vmname}/console-output.log"
 VBoxManage storagectl ${vmname} --name "IDE" --add ide --controller PIIX4
 VBoxManage storagectl ${vmname} --name "SCSI" --add scsi --controller Lsilogic
