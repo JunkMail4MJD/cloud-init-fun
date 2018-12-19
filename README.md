@@ -1,4 +1,4 @@
-# cloud-init-fun
+# Introductory scripts for using Ubuntu cloud images customized via cloud-init
 playing around with cloud-init images
 
 
