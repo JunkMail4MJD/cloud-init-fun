@@ -61,7 +61,8 @@ runcmd:
  - "export CHANGE_MINIKUBE_NONE_USER=true"
  - "sudo minikube start --vm-driver none"
  - "sudo minikube addons enable ingress"
- - "kubectl patch svc kubernetes-dashboard -p '{"spec":{"ports":[{"protocol":"TCP","port":80,"targetPort":9090,"nodePort":31080}],"type":"NodePort"}}' --namespace kube-system"
+ - "sudo minikube addons enable efk"
+ - 'sleep 45; kubectl patch svc kubernetes-dashboard -p "{\"spec\":{\"ports\":[{\"protocol\":\"TCP\",\"port\":80,\"targetPort\":9090,\"nodePort\":31080}],\"type\":\"NodePort\"}}" --namespace kube-system'
  - "sudo kubectl get all --all-namespaces"
 EOF
 
