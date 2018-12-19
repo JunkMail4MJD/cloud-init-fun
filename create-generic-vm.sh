@@ -7,9 +7,10 @@ help () {
   cat <<- END
 	HELP: Script to create VirtualBox VMs using cloud-init (similar to AWS EC2)
   ------------------------------------------
-    ./create-generic-vm.sh  <virtual machine name> <cloud image appliance file - ova>
 
-    Example: create-generic-vm.sh generic-18 ubuntu-18.04-server-cloudimg-amd64.ova
+    ./create-generic-vm.sh  <virtual machine name> <cloud image virtual disk.vmdk>
+
+    Example: create-generic-vm.sh generic-18 ubuntu-18.04-server-cloudimg-amd64.vmdk
 
 	END
 }
@@ -79,7 +80,6 @@ local-hostname: ${vmname}
 EOF
 
 docker run --rm -d --name cloud-init-creator -v ${basefolder}${vmname}/:/usr/src/files junkmail4mjd/cloud-init-creator:v0.0.1
-
 
 ##------------------ setup variables
 bootDisk=${vmname}/disk-1.vdi
