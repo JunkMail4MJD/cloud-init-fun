@@ -66,15 +66,6 @@ system_info:
     groups: [sudo, adm ]
 packages:
   - docker.io
-manage_resolv_conf: true
-resolv_conf:
-  nameservers: ['10.0.0.1']
-  searchdomains:
-    - terra
-  domain: terra
-  options:
-    rotate: false
-    timeout: 1
 write_files:
   - encoding: b64
     content: |
@@ -128,7 +119,7 @@ runcmd:
   - "systemctl stop docker"
   - "printf 'Restarting Docker\n'"
   - "systemctl start docker"
-  - "printf 'showing results\n'"
+  - "printf 'showing local files\n'"
   - "ls -alGh /home/ubuntu/"
   - "ls -alGh /root/"
   - "ls -alGh /etc/docker"
