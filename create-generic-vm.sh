@@ -64,13 +64,10 @@ system_info:
   default_user:
    name: ubuntu
    groups: [sudo, adm ]
-packages:
- - docker.io
 runcmd:
  - "ip addr"
  - "df -h"
  - [ update-grub ]
- - "docker run -d --name thisNginx --network host nginx:1.14-alpine"
 EOF
 
 instanceId=$(openssl rand -hex 8)
@@ -98,7 +95,7 @@ VBoxManage storageattach ${vmname} --storagectl "SCSI" --port 0 --device 0 --typ
 VBoxManage setproperty machinefolder ${originalMachineFolder}
 
 ##------------------ start virtual machine
-VBoxManage startvm "${vmname}" --type headless
+VBoxManage startvm "${vmname}" 
 
 printf "When your new machine has finished booting,\n"
 printf "ssh into your new box with the following command:\n\n"
