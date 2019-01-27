@@ -71,4 +71,4 @@ runcmd:
   - "ls -alGh /home/ubuntu/"
   - "ls -alGh /root/"
   - "ls -alGh /etc/docker"
-  - "sudo docker run -d --privileged --restart=unless-stopped --net=host -v /etc/kubernetes:/etc/kubernetes -v /var/run:/var/run rancher/rancher-agent:v2.1.3 --server https://10.0.205.109 --token 56clg89j5ckddlrb5n2j55tkrhnw2wrmz98xsl28rw24998xddbc2q --ca-checksum f2c5709e62ef7c682c4842bad843035b8237ae5653127a708bf49ec3a31adf57 --etcd --controlplane --worker"
+  - "sudo docker run -d --restart=unless-stopped -p 8080:80 -p 8443:443 -v /host/rancher:/var/lib/rancher rancher/rancher:v2.1.5"
