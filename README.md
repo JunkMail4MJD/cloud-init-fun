@@ -23,28 +23,14 @@ Here are some example scripts to get you started exploring what is possible with
 
 
 
-**Create a generic Ubuntu 16.04 LTS VM running NGINX**
-
-      ./create-generic-vm.sh generic-16-04-LTS images/ubuntu-16.04-server-cloudimg-amd64.vmdk
-
-* The generic VM example script creates a new virtual machine with 1 CPU 2 GB of RAM and a 100GB virtual drive.
-* It shows you how to setup users, set a password, give SUDO privileges and run a one time startup script to install software.
-* This script updates APT, installs docker and runs a NGINX web server
-* If your DHCP server supports dynamic registration of DNS names on your network based on the computer names that it issues IP addresses to then your can pull up NGINX at the following address HTTP://generic-16-04-LTS
-* The script generates a new unique SSH Key Pair for every virtual machine
-* The command to ssh into your new VM is printed as the final output of the script
-* For a more secure server, delete the configuration lines that set root user password
-* With no root user password set it will be impossible to log into the box with anything other than the SSH Key that was created and stored on you machine
-
-
-
 **Create a generic Ubuntu 18.04 LTS VM running NGINX**
 
-      ./create-generic-vm.sh generic-18-04-LTS images/ubuntu-18.04-server-cloudimg-amd64.vmdk
+      ./create-generic-vm.sh generic-18-04-LTS 
 
-* This example script is the same as the previous example with the only change being that it uses a different version of the operating system
-* This shows how you can upgrade the operating system underneath your application without any fuss
-* If your DHCP server supports dynamic registration of DNS names on your network based on the computer names that it issues IP addresses to then your can pull up NGINX at the following address HTTP://generic-18-04-LTS
+* The generic VM example script creates a new virtual machine with 1 CPU 2 GB of RAM and a 10GB virtual drive.
+* It shows you how to setup users, set a password, give SUDO privileges and run a one time startup script to install software.
+* This script updates APT, installs docker and runs a NGINX web server
+* If your DHCP server supports dynamic registration of DNS names on your network based on the computer names that it issues IP addresses to then your can pull up NGINX at the following address HTTP://generic-16-04-LTS.localdomain
 * The script generates a new unique SSH Key Pair for every virtual machine
 * The command to ssh into your new VM is printed as the final output of the script
 * For a more secure server, delete the configuration lines that set root user password
@@ -54,7 +40,7 @@ Here are some example scripts to get you started exploring what is possible with
 
 **Minimal Kubernetes Playground**
 
-      ./create-vm-minikube-installed.sh mini-installed images/ubuntu-18.04-server-cloudimg-amd64.vmdk
+      ./create-vm-minikube-installed.sh minikube-installed  
 
 * This example script builds on the previous example with a slightly more complex startup script
 * It creates a VM with docker, kubectl and minikube installed but no cluster setup
@@ -66,17 +52,17 @@ Here are some example scripts to get you started exploring what is possible with
 * With no root user password set it will be impossible to log into the box with anything other than the SSH Key that was created and stored on you machine
 
 
-**Kubernetes Playground with a cluster**
+**Kubernetes Playground with a running cluster**
 
-      ./create-basic-minikube-vm.sh mini-basic-cluster images/ubuntu-18.04-server-cloudimg-amd64.vmdk
+      ./create-basic-minikube-vm.sh minikube-basic-cluster 
 
 
 * This example script builds on the previous example with a slightly more complex startup script
 * It creates a VM with docker, kubectl and minikube installed AND sets up a kubernetes cluster
 * The intention is that you will ssh into the virtual machine and get experience and practice deploying applications into a running kubernetes cluster
 * The cluster has the kubernetes dashboard installed and running
-* if your DHCP / DNS servers support it then the dashboard should be accessible at http://mini-basic-cluster:31080
-* Additionally the EFK monitoring and logging stack is installed and ready to go it should be available at http://mini-basic-cluster:30003
+* if your DHCP / DNS servers support it then the dashboard should be accessible at http://minikube-basic-cluster.localdomain:31080
+* Additionally the EFK monitoring and logging stack is installed and ready to go it should be available at http://minikube-basic-cluster.localdomain:30003
 * It may take a few minutes for it to startup and render a screen properly
 * When it comes up there will be a screen asking you to create an index
 * It pre-populates the logstash* index in the field to create an index
@@ -94,10 +80,9 @@ Here are some example scripts to get you started exploring what is possible with
 
 ## Cleanup when you are done
 
-    ./cleanup-vm.sh generic-16-04-LTS
     ./cleanup-vm.sh generic-18-04-LTS
-    ./cleanup-vm.sh mini-installed
-    ./cleanup-vm.sh mini-basic-cluster
+    ./cleanup-vm.sh minikube-installed 
+    ./cleanup-vm.sh minikube-basic-cluster 
 
 
 * These commands will stop and delete all of the virtual machines that just created
