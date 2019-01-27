@@ -35,9 +35,9 @@ cd docker-config
 tar -czvf ../config.tar.gz .
 cd ..
 
-base64 config.tar.gz > config.tar.gz.txt
+base64 -i config.tar.gz -o config.tar.gz.b64
 
 rm -Rf docker-config
 rm config.tar.gz
 
-printf "\n\ncopy the base 64 encoded text that was just put intoo config.tar.gz.txt into your \ncloud-init YAML file in the section for writing files. \nIt will be decoded and land as binary file in your machine.\n\n"
+printf "\n\ncopy the base 64 encoded text that was just put into config.tar.gz.b64 into your \ncloud-init YAML file in the section for writing files. \nIt will be decoded and land as binary file in your machine.\n\n"

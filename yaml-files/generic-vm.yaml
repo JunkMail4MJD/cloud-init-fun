@@ -1,0 +1,22 @@
+#cloud-config
+users:
+  - name: ubuntu
+    plain_text_passwd: 'password'
+    lock_passwd: False
+    home: /home/ubuntu
+    shell: /bin/bash
+    gecos: ubuntu
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    ssh-authorized-keys:
+      - ${publicKey}
+system_info:
+  default_user:
+   name: ubuntu
+   groups: [sudo, adm ]
+packages:
+ - docker.io
+runcmd:
+ - "ip addr"
+ - "df -h"
+ - [ update-grub ]
+ - "docker run -d --name thisNginx --network host nginx:1.14-alpine"
