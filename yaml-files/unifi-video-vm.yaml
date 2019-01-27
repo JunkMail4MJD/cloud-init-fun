@@ -1,0 +1,81 @@
+#cloud-config
+users:
+  - name: ubuntu
+    plain_text_passwd: 'password'
+    lock_passwd: False
+    home: /home/ubuntu
+    shell: /bin/bash
+    gecos: ubuntu
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    ssh-authorized-keys:
+      - ${publicKey}
+system_info:
+  default_user:
+    name: ubuntu
+    groups: [sudo, adm ]
+packages:
+  - docker.io
+  - build-essential
+  - openssh-server
+  - virtualbox-guest-dkms
+write_files:
+  - encoding: b64
+    content: |
+      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
+      /z3iv19e/PfAAw888MAvE/8CJTheYAAoAAA=
+    owner: ubuntu:ubuntu
+    path: /usr/src/docker-config.tar.gz
+    permissions: '0644'
+runcmd:
+  - "update-grub"
+  - "printf 'Showing IP address\n'"
+  - "ip addr"
+  - "printf 'Showing disk space\n'"
+  - "df -h"
+  - "printf 'Extracting docker mirror config file\n'"
+  - "tar -xzvf /usr/src/docker-config.tar.gz  --directory=/etc/docker"
+  - "printf 'Stopping Docker\n'"
+  - "systemctl stop docker"
+  - "printf 'Restarting Docker\n'"
+  - "systemctl start docker"
+  - "printf 'showing local files\n'"
+  - "ls -alGh /home/ubuntu/"
+  - "ls -alGh /root/"
+  - "ls -alGh /etc/docker"
+  - "printf '\n\n********Downloading Unifi Video ********\n\n'"
+  - "curl -Lo /home/ubuntu/unifi-video.deb https://dl.ubnt.com/firmwares/ufv/v3.9.12/unifi-video.Ubuntu16.04_amd64.v3.9.12.deb"
+  - "printf '\n\n********Installing Unifi Video ********\n\n'"
+  - "dpkg -i  /home/ubuntu/unifi-video.deb"
+  - "apt-get -y install -f"
