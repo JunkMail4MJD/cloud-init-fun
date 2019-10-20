@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VBoxManage controlvm video poweroff
-VBoxManage snapshot  video restore freshInstall
-VBoxManage startvm   video --type headless
+VBoxManage controlvm video31010 poweroff
+VBoxManage snapshot  video31010 restore freshInstall
+VBoxManage startvm   video31010 --type headless
 
