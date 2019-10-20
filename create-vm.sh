@@ -26,7 +26,7 @@ handleError(){
     then
       echo " "
     else
-      vboxmanage setproperty machinefolder /'$(${originalMachineFolder})/'
+      vboxmanage setproperty machinefolder "${originalMachineFolder}"
     fi
   fi
 }
@@ -102,7 +102,7 @@ printf "\n\n.... 13. Attaching cloud image boot disk\n\n"
 VBoxManage storageattach ${vmname} --storagectl "SCSI" --port 0 --device 0 --type hdd --medium ${bootDisk}
 
 printf "\n\n.... 14. Resetting default machine folder ${originalMachineFolder}\n\n"
-VBoxManage setproperty machinefolder /'${originalMachineFolder}/'
+VBoxManage setproperty machinefolder "${originalMachineFolder}"
 
 ##------------------ start virtual machine
 printf "\n\n.... 15. Starting virtual machine ${vmname}\n\n"

@@ -75,7 +75,7 @@ runcmd:
   - "ls -alGh /root/"
   - "ls -alGh /etc/docker"
   - "printf '\n\n********Downloading Unifi Video ********\n\n'"
-  - "curl -Lo /home/ubuntu/unifi-video.deb https://dl.ubnt.com/firmwares/ufv/v3.9.12/unifi-video.Ubuntu16.04_amd64.v3.9.12.deb"
+  - "curl -Lo /home/ubuntu/unifi-video.deb https://dl.ubnt.com/firmwares/ufv/v3.10.10/unifi-video.Ubuntu16.04_amd64.v3.10.10.deb"
   - "printf '\n\n********Installing Unifi Video ********\n\n'"
   - "dpkg -i  /home/ubuntu/unifi-video.deb"
   - "apt-get -y install -f"
